@@ -1,0 +1,90 @@
+=====================================================
+ ESTACIONAMIENTO INTELIGENTE
+ Registro de ingresos y egresos por patente con IA
+=====================================================
+
+Al entrar, la cámara detecta el vehículo, su tipo y su patente, y registra
+el ingreso sin que el conductor se baje. Al salir, otra cámara (o la misma
+en modo SALIDA) lee la patente, calcula el tiempo y muestra cuánto pagar.
+
+Contenido:
+  app_camara.py      -> la cámara que registra ingresos y egresos
+  panel.py           -> panel de control en el navegador
+  config.yaml        -> tarifas, tolerancia, categorías y ajustes (editable)
+  estacionamiento/   -> el código del sistema
+  modelos/           -> vehiculos.pt (tipo de vehículo) y patentes.pt (detector de patentes)
+  datos/             -> se crea solo: base de datos y fotos de cada movimiento
+
+-----------------------------------------------------
+ 1. INSTALACIÓN (solo la primera vez)
+-----------------------------------------------------
+1) Instalar Python 3.12 desde https://www.python.org/downloads/
+   (Windows: marcar "Add Python to PATH" en la primera pantalla).
+2) OPCIONAL, si la PC tiene placa NVIDIA: instalar primero PyTorch con CUDA
+   desde https://pytorch.org (Get Started -> Windows, Pip, CUDA más reciente).
+   Sin placa NVIDIA funciona igual, un poco más lento.
+3) Abrir una terminal en esta carpeta (en Windows: abrir la carpeta, escribir
+   "cmd" en la barra de direcciones y Enter) y ejecutar:
+
+     pip install -r requirements.txt
+
+-----------------------------------------------------
+ 2. USO
+-----------------------------------------------------
+Terminal 1 - la cámara:
+
+     python app_camara.py
+
+  Teclas:  E = modo ENTRADA (barra verde)
+           S = modo SALIDA  (barra naranja)
+           C = borrar el mensaje en pantalla
+           Q = salir
+
+Terminal 2 - el panel de control (se abre en el navegador):
+
+     streamlit run panel.py
+
+  Pestañas del panel:
+    En vivo       cupos libres, vehículos adentro con lo que pagarían ahora,
+                  última salida (ticket y fotos) y actividad
+    Movimientos   historial con filtros; al seleccionar una fila se ven las
+                  fotos y se puede corregir la patente o la categoría, o anular
+    Caja          recaudación del día, ingresos por hora, ocupación, CSV
+    Operaciones   ingreso y salida manual (patente sucia o ilegible)
+    Tarifas       precios vigentes y calculadora
+
+  En config.yaml se puede cambiar la capacidad (cantidad de cocheras) y
+  las horas a partir de las cuales un vehículo se marca como demorado.
+
+Para probar: mostrar a la cámara una foto de un auto con la patente bien
+visible (en el celular o impresa). En modo ENTRADA se registra el ingreso;
+después pasar a modo SALIDA con la tecla S y mostrar la misma patente:
+aparece el ticket con el importe.
+
+Para la presentación conviene poner en config.yaml:   factor_tiempo: 60
+(cada minuto real cuenta como una hora, así se ve el cobro de fracciones).
+
+Con dos cámaras reales (una por pasarela):
+     python app_camara.py --camara 0 --modo entrada --fijo
+     python app_camara.py --camara 1 --modo salida  --fijo
+
+Con un video:
+     python app_camara.py --video entrada.mp4 --modo entrada
+
+-----------------------------------------------------
+ 3. PROBLEMAS FRECUENTES
+-----------------------------------------------------
+* "No se encontró el detector de patentes": falta modelos/patentes.pt
+  (se genera con el notebook).
+* La cámara no abre: cerrar Zoom/Meet/Teams, o usar --camara 1.
+* No confirma la patente: acercarla, mejorar la luz, o bajar en config.yaml
+  conf_min_ocr (0.60 -> 0.50) o min_lecturas (3 -> 2).
+* Registra patentes equivocadas: subir conf_min_ocr o min_lecturas.
+* Para borrar todos los registros: cerrar las apps y borrar la carpeta "datos".
+
+-----------------------------------------------------
+ 4. DATOS PERSONALES
+-----------------------------------------------------
+Las patentes asociadas a horarios son datos personales (Ley 25.326).
+En un uso real: informar con un cartel en la entrada, usar los datos solo
+para el cobro, y borrar periódicamente los registros y fotos antiguos.

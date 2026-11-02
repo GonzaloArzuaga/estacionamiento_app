@@ -1,0 +1,9 @@
+# Datos de uso: patentes, horarios y fotos (datos personales)
+datos/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Resultados de pruebas de YOLO
+runs/

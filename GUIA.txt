@@ -1,0 +1,4 @@
+Instalar Python 3.12 desde python.org, marcando “Add Python to PATH”. Una sola vez.
+Descomprimir el RAR.
+Doble clic en Instalar.bat. Una sola vez; tarda varios minutos y necesita internet.
+Doble clic en Iniciar estacionamiento.bat cada vez que quiera usarlo.

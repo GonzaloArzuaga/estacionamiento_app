@@ -1,0 +1,65 @@
+# ==========================================
+# CONFIGURACIÓN DEL ESTACIONAMIENTO
+# Se puede editar con el Bloc de notas. Los cambios se aplican al reiniciar la app.
+# ==========================================
+
+nombre_estacionamiento: "Estacionamiento Inteligente"
+capacidad: 60                 # cantidad de cocheras: el panel muestra los cupos libres
+alerta_horas: 12              # el panel marca los vehículos que llevan más de estas horas adentro
+
+# ---------- Modelos ----------
+modelos:
+  vehiculos: "modelos/vehiculos.pt"     # el best.pt del proyecto anterior (detector de tipos de vehículos)
+  patentes: "modelos/patentes.pt"       # el detector de patentes entrenado en el notebook
+  ocr: "cct-s-v2-global-model"          # lector de caracteres (incluye patentes argentinas)
+
+# ---------- Reconocimiento ----------
+reconocimiento:
+  conf_vehiculo: 0.40         # confianza mínima para aceptar un vehículo
+  conf_patente: 0.40          # confianza mínima para aceptar una patente
+  conf_min_ocr: 0.85          # confianza mínima de la lectura de caracteres
+  min_lecturas: 1             # cuántas veces hay que leer la misma patente para confirmarla
+  ventana_seg: 4              # en cuántos segundos se juntan esas lecturas
+  espera_seg: 30              # tiempo en que no se vuelve a registrar la misma patente en la misma cámara
+  max_correcciones: 2         # caracteres que se permite corregir con el formato argentino
+  tam_imagen: 640
+
+# ---------- Categorías ----------
+# Clase que devuelve el modelo de vehículos -> categoría tarifaria.
+# Las clases que no figuran (avión, tren, helicóptero, skate) se ignoran.
+mapa_clases:
+  auto: auto
+  car: auto
+  moto: moto
+  motorcycle: moto
+  camioneta: camioneta
+  van: camioneta
+  ambulancia: camioneta
+  camion: utilitario_grande
+  truck: utilitario_grande
+  colectivo: utilitario_grande
+  bus: utilitario_grande
+categoria_por_defecto: auto   # si la patente se lee pero no se reconoce el vehículo
+
+# ---------- Cobro ----------
+cobro:
+  primera_hora_min: 60     # la primera hora se cobra completa
+  fraccion_min: 15         # después, cada fracción de 15 minutos
+  tolerancia_min: 5        # minutos de gracia antes de cobrar la fracción siguiente
+  minutos_gratis: 0        # si sale antes de estos minutos no paga (0 = siempre paga)
+  moneda: "$"
+
+# Precios de ejemplo: ajustarlos a los valores reales.
+tarifas:
+  auto:              {hora: 3000, fraccion: 750,  tope_24h: 20000}
+  moto:              {hora: 1500, fraccion: 375,  tope_24h: 10000}
+  camioneta:         {hora: 3600, fraccion: 900,  tope_24h: 24000}
+  utilitario_grande: {hora: 5000, fraccion: 1250, tope_24h: 35000}
+
+# ---------- Modo demostración ----------
+# Con 60, cada minuto real cuenta como una hora (sirve para mostrar el cobro en una presentación).
+factor_tiempo: 60
+
+# ---------- Archivos ----------
+base_datos: "datos/estacionamiento.db"
+carpeta_fotos: "datos/fotos"
